@@ -1,6 +1,6 @@
+import os
 from pymongo import MongoClient
 import pandas as pd
-import json
 
 client = MongoClient("mongodb://localhost:27017/")
 db = client["JiraReposAnon"]
@@ -86,9 +86,12 @@ print(f"\nLinks shape: {links_df.shape}")
 print(links_df["link_type"].value_counts().head(10))
 
 # ── Save to CSV ────────────────────────────────────────────────────────
-issues_df.to_csv("jira_issues_poc.csv", index=False)
-links_df.to_csv("jira_links_poc.csv", index=False)
+issues_out = os.environ.get("ISSUES_OUT", "jira_issues_poc.csv")
+links_out  = os.environ.get("LINKS_OUT",  "jira_links_poc.csv")
+
+issues_df.to_csv(issues_out, index=False)
+links_df.to_csv(links_out, index=False)
 
 print("\nSaved:")
-print("  jira_issues_poc.csv")
-print("  jira_links_poc.csv")
+print(f"  {issues_out}")
+print(f"  {links_out}")

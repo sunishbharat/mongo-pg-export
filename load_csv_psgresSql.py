@@ -15,6 +15,7 @@ Usage:
     uv run python load_csv_psgresSql.py
 """
 
+import os
 import pandas as pd
 import psycopg2
 from psycopg2.extras import execute_values
@@ -35,10 +36,10 @@ conn = psycopg2.connect(
 # ── Columns to exclude from all CSVs before loading ───────────────────
 EXCLUDE_COLS = {"assignee", "reporter", "priority", "description"}
 
-issues_df = pd.read_csv("jira_issues_poc.csv")
+issues_df = pd.read_csv(os.environ.get("ISSUES_IN", "jira_issues_poc.csv"))
 issues_df = issues_df.drop(columns=[c for c in EXCLUDE_COLS if c in issues_df.columns])
 
-links_df  = pd.read_csv("jira_links_poc.csv")
+links_df  = pd.read_csv(os.environ.get("LINKS_IN", "jira_links_poc.csv"))
 links_df  = links_df.drop(columns=[c for c in EXCLUDE_COLS if c in links_df.columns])
 
 print(f"Issues: {issues_df.shape}")
