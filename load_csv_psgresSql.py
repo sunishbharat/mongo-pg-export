@@ -18,7 +18,7 @@ Usage:
 import os
 import pandas as pd
 import psycopg2
-from psycopg2.extras import execute_values
+
 import io
 
 # ── Database connection settings ───────────────────────────────────────
@@ -73,8 +73,10 @@ def pg_type(dtype):
     Returns:
         A PostgreSQL type string: 'BIGINT', 'DOUBLE PRECISION', or 'TEXT'.
     """
-    if pd.api.types.is_integer_dtype(dtype):   return "BIGINT"
-    if pd.api.types.is_float_dtype(dtype):     return "DOUBLE PRECISION"
+    if pd.api.types.is_integer_dtype(dtype):
+        return "BIGINT"
+    if pd.api.types.is_float_dtype(dtype):
+        return "DOUBLE PRECISION"
     return "TEXT"
 
 
