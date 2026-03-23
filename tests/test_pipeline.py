@@ -7,24 +7,25 @@ import pytest
 
 # ── flatten_issue (pure function, defined inline to avoid module-level DB calls)
 
+
 def flatten_issue(doc):
     f = doc.get("fields", {})
     return {
-        "key":          doc.get("key", ""),
-        "summary":      f.get("summary", ""),
-        "type":         (f.get("issuetype") or {}).get("name", ""),
-        "status":       (f.get("status") or {}).get("name", ""),
-        "priority":     (f.get("priority") or {}).get("name", ""),
-        "project":      (f.get("project") or {}).get("key", ""),
+        "key": doc.get("key", ""),
+        "summary": f.get("summary", ""),
+        "type": (f.get("issuetype") or {}).get("name", ""),
+        "status": (f.get("status") or {}).get("name", ""),
+        "priority": (f.get("priority") or {}).get("name", ""),
+        "project": (f.get("project") or {}).get("key", ""),
         "project_name": (f.get("project") or {}).get("name", ""),
-        "assignee":     (f.get("assignee") or {}).get("displayName", "unassigned"),
-        "reporter":     (f.get("reporter") or {}).get("displayName", "unknown"),
-        "created":      str(f.get("created", "")),
-        "updated":      str(f.get("updated", "")),
-        "resolved":     str(f.get("resolutiondate", "")),
+        "assignee": (f.get("assignee") or {}).get("displayName", "unassigned"),
+        "reporter": (f.get("reporter") or {}).get("displayName", "unknown"),
+        "created": str(f.get("created", "")),
+        "updated": str(f.get("updated", "")),
+        "resolved": str(f.get("resolutiondate", "")),
         "story_points": f.get("story_points", f.get("customfield_10016")) or 0,
-        "link_count":   doc.get("link_count", 0),
-        "description":  (f.get("description") or "")[:300],
+        "link_count": doc.get("link_count", 0),
+        "description": (f.get("description") or "")[:300],
     }
 
 
@@ -67,10 +68,15 @@ def test_flatten_issue_missing_fields():
 
 # ── load_csv_psgresSql: pg_type ────────────────────────────────────────────
 
+
 @pytest.fixture(scope="module")
 def loader():
-    with patch("psycopg2.connect"), patch("pandas.read_csv", return_value=pd.DataFrame()):
+    with (
+        patch("psycopg2.connect"),
+        patch("pandas.read_csv", return_value=pd.DataFrame()),
+    ):
         import load_csv_psgresSql as l
+
         return l
 
 
@@ -88,12 +94,13 @@ def test_pg_type_text(loader):
 
 # ── main.py: CLI argument parsing ──────────────────────────────────────────
 
+
 def _parse(args):
     parser = argparse.ArgumentParser()
-    parser.add_argument("--issues",      default="jira_issues_poc.csv")
-    parser.add_argument("--links",       default="jira_links_poc.csv")
+    parser.add_argument("--issues", default="jira_issues_poc.csv")
+    parser.add_argument("--links", default="jira_links_poc.csv")
     parser.add_argument("--skip-export", action="store_true")
-    parser.add_argument("--skip-load",   action="store_true")
+    parser.add_argument("--skip-load", action="store_true")
     return parser.parse_args(args)
 
 

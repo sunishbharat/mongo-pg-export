@@ -22,15 +22,14 @@ import psycopg2
 import io
 
 # ── Database connection settings ───────────────────────────────────────
-DB_USER     = "postgres"
+DB_USER = "postgres"
 DB_PASSWORD = "postgres"
-DB_HOST     = "localhost"
-DB_PORT     = "5432"
-DB_NAME     = "jira_project"
+DB_HOST = "localhost"
+DB_PORT = "5432"
+DB_NAME = "jira_project"
 
 conn = psycopg2.connect(
-    host=DB_HOST, port=DB_PORT,
-    dbname=DB_NAME, user=DB_USER, password=DB_PASSWORD
+    host=DB_HOST, port=DB_PORT, dbname=DB_NAME, user=DB_USER, password=DB_PASSWORD
 )
 
 # ── Columns to exclude from all CSVs before loading ───────────────────
@@ -39,8 +38,8 @@ EXCLUDE_COLS = {"assignee", "reporter", "priority", "description"}
 issues_df = pd.read_csv(os.environ.get("ISSUES_IN", "jira_issues_poc.csv"))
 issues_df = issues_df.drop(columns=[c for c in EXCLUDE_COLS if c in issues_df.columns])
 
-links_df  = pd.read_csv(os.environ.get("LINKS_IN", "jira_links_poc.csv"))
-links_df  = links_df.drop(columns=[c for c in EXCLUDE_COLS if c in links_df.columns])
+links_df = pd.read_csv(os.environ.get("LINKS_IN", "jira_links_poc.csv"))
+links_df = links_df.drop(columns=[c for c in EXCLUDE_COLS if c in links_df.columns])
 
 print(f"Issues: {issues_df.shape}")
 print(f"Links:  {links_df.shape}")
@@ -59,8 +58,7 @@ def df_to_table(cur, df, table_name):
     buf.seek(0)
     cols = ", ".join(df.columns)
     cur.copy_expert(
-        f"COPY {table_name} ({cols}) FROM STDIN WITH (FORMAT CSV, NULL '\\N')",
-        buf
+        f"COPY {table_name} ({cols}) FROM STDIN WITH (FORMAT CSV, NULL '\\N')", buf
     )
 
 
@@ -92,8 +90,8 @@ def create_table(cur, df, table_name):
         table_name: Name of the table to create.
     """
     col_defs = ", ".join(f'"{c}" {pg_type(df[c].dtype)}' for c in df.columns)
-    cur.execute(f'DROP TABLE IF EXISTS {table_name}')
-    cur.execute(f'CREATE TABLE {table_name} ({col_defs})')
+    cur.execute(f"DROP TABLE IF EXISTS {table_name}")
+    cur.execute(f"CREATE TABLE {table_name} ({col_defs})")
 
 
 def print_all_columns(conn):
@@ -153,7 +151,9 @@ with conn.cursor() as cur:
         print(f"  {row[0]:<20} {row[1]}")
 
     print("\nTop link types:")
-    cur.execute("SELECT link_type, COUNT(*) AS n FROM ticket_links GROUP BY link_type ORDER BY n DESC LIMIT 8")
+    cur.execute(
+        "SELECT link_type, COUNT(*) AS n FROM ticket_links GROUP BY link_type ORDER BY n DESC LIMIT 8"
+    )
     for row in cur.fetchall():
         print(f"  {row[0]:<30} {row[1]}")
 
