@@ -1,0 +1,18 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+data
+*.local.*
+
+# Generated CSV output (may contain sensitive Jira data)
+*.csv
+
+# Local Python version config
+.python-version
